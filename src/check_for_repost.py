@@ -26,6 +26,7 @@ else:
 
             subreddit = reddit.subreddit(subreddit_name)
 
+            for submission in subreddit.new(limit=1):
                 if submission.id not in posts_replied_to and submission.is_self is False:
 
                     # If we find at least 1 duplicate link of the current submission
@@ -42,10 +43,12 @@ else:
 
                         # Reply to the current submission with a message showing them that this has already been posted.
                         submission.reply("This has been [submitted already](" + post_url + ") you lazy bastard.\n____________________________________________________________________________\n*This is an automated bot. Have feedback? Just send me a message or reply to this comment!*")
-                        
+                            
                         # Add the submission ID to the list of IDs
                         posts_replied_to.append(submission.id)
-
+                    else:
+                        print('No duplicates to report this time!')
+                        
     # Update the text file with the new IDs of what has been replied to
     with open("posts_replied_to.txt", "w") as f:
         for post_id in posts_replied_to:
