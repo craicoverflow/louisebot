@@ -1,3 +1,7 @@
+[DEFAULT]
+# A boolean to indicate whether or not to check for package updates.
+check_for_updates=True
+
 submission_kind=t3
 subreddit_kind=t5
 
