@@ -1,11 +1,11 @@
 #!/usr/bin/python
 import praw
 
-reddit = praw.Reddit('bot1')
+reddit = praw.Reddit('louisebot')
 
 subreddit = reddit.subreddit("louisebot")
 
-for submission in subreddit.hot(limit=5)
+for submission in subreddit.hot(limit=5):
     print("Title: ", submission.title)
     print("Text: ", submission.selftext)
     print("Score: ", submission.score)
