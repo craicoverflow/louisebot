@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
                         source_code_url = "https://github.com/craicoverflow/louisebot"
                         # Reply to the current submission with a message showing them that this has already been posted.
-                        submission.reply("This has been [submitted already](" + post_url + ") you lazy bastard.\n____________________________________________________________________________\n*This is an automated bot. Have feedback? Just send me a message or reply to this comment!* And here is my [source code](" + source_code_url + ").")
+                        submission.reply("This has been [submitted already](" + post_url + ") you lazy bastard.\n____________________________________________________________________________\n*This is an automated bot. Have feedback? Just send me a message or reply to this comment!* Here is my [source code](" + source_code_url + ").")
                                 
                         # Add the submission ID to the list of IDs
                         posts_replied_to.append(submission.id)
