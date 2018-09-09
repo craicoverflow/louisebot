@@ -6,15 +6,16 @@ import re
 import sys
 import pdb
 import argparse
+from datetime import datetime
 from configparser import ConfigParser
 from collections import defaultdict
 from io import StringIO
 
 def load_config():
     default = defaultdict(str)
-    default["subreddit"] = "thats_a_repost_bot"
+    default["subreddit"] = "louisebot"
     default["limit"] = "10"
-    default["bot"] = "thats_a_repost_bot"
+    default["bot"] = "ThatsARepostBot"
 
     config_path = os.path.expanduser("./config/check_for_repost.rc")
     section_name = "root"
@@ -52,7 +53,7 @@ def load_config():
 config = load_config()
 
 def parse_args():
-    parser = argparse.ArgumentParser(description = "Your friendly neighbourhood repost bot!")
+    parser = argparse.ArgumentParser(description = "Your friendly neighbourhood repost checker bot!")
     parser.add_argument("-s", "--subreddit", type=str, default=config["subreddit"])
     parser.add_argument("-l", "--limit", type=int, default=config["limit"])
     parser.add_argument("-b", "--bot", type=str, default=config["bot"])
@@ -91,12 +92,15 @@ if __name__ == '__main__':
     bot_name = args.bot
 
     reddit = praw.Reddit(bot_name)
-    subreddit = reddit.subreddit(subreddit_name) 
+    subreddit = reddit.subreddit(subreddit_name)
+
+    with open('logs/daily.log', 'a+') as log:
+        log.write("Checking /r/{} at {}\n".format(subreddit_name, datetime.utcnow()))
     
-    if not os.path.isfile("posts_replied_to.txt"):
+    if not os.path.isfile("logs/posts_replied_to.txt"):
         posts_replied_to = [] # Create an empty list to store the IDs of posts that have been replied to
     else:
-        with open("posts_replied_to.txt", "r") as f:
+        with open("logs/posts_replied_to.txt", "r") as f:
 
             posts_replied_to = get_posts_replied_to(f)
 
@@ -114,13 +118,13 @@ if __name__ == '__main__':
 
                         source_code_url = "https://github.com/craicoverflow/thats_a_repost_bot"
                         # Reply to the current submission with a message showing them that this has already been posted.
-                        submission.reply("This has been [submitted already](" + post_url + ") you lazy bastard.\n____________________________________________________________________________\n*This is an automated bot. Have feedback? Just send me a message or reply to this comment!* Here is my [source code](" + source_code_url + ").")
+                        submission.reply("This has been [submitted already](" + post_url + ") you lazy bastard.\n____________________________________________________________________________\n*This is an automated bot. Have feedback? Just send me a message or reply to this comment! Here is my [source code](" + source_code_url + ").*")
                                 
                         # Add the submission ID to the list of IDs
                         posts_replied_to.append(submission.id)
 
 # Update the text file with the new IDs of what has been replied to
-with open("posts_replied_to.txt", "w") as f:
+with open("logs/posts_replied_to.txt", "w") as f:
     for post_id in posts_replied_to:
         f.write(post_id + "\n")
 
