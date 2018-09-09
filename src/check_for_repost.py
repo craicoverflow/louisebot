@@ -12,9 +12,9 @@ from io import StringIO
 
 def load_config():
     default = defaultdict(str)
-    default["subreddit"] = "louisebot"
+    default["subreddit"] = "thats_a_repost_bot"
     default["limit"] = "10"
-    default["bot"] = "louisebot"
+    default["bot"] = "thats_a_repost_bot"
 
     config_path = os.path.expanduser("./config/check_for_repost.rc")
     section_name = "root"
@@ -52,7 +52,7 @@ def load_config():
 config = load_config()
 
 def parse_args():
-    parser = argparse.ArgumentParser(description = "Your friendly neighbourhood Louisebot")
+    parser = argparse.ArgumentParser(description = "Your friendly neighbourhood repost bot!")
     parser.add_argument("-s", "--subreddit", type=str, default=config["subreddit"])
     parser.add_argument("-l", "--limit", type=int, default=config["limit"])
     parser.add_argument("-b", "--bot", type=str, default=config["bot"])
@@ -65,6 +65,7 @@ def filter_duplicates(duplicate_list, submission_created_utc, subreddit_name):
         if el.subreddit == subreddit_name and submission_created_utc > el.created_utc: yield el
 
 def get_last_duplicate(submission, subreddit_name):
+
     duplicate_list = list(filter_duplicates(submission.duplicates(), submission.created_utc, subreddit_name))
 
     last_duplicate = None
@@ -111,7 +112,7 @@ if __name__ == '__main__':
                         # form the full URL of the duplicate so we can let the poster know
                         post_url = 'https://reddit.com' + latest_duplicate.permalink
 
-                        source_code_url = "https://github.com/craicoverflow/louisebot"
+                        source_code_url = "https://github.com/craicoverflow/thats_a_repost_bot"
                         # Reply to the current submission with a message showing them that this has already been posted.
                         submission.reply("This has been [submitted already](" + post_url + ") you lazy bastard.\n____________________________________________________________________________\n*This is an automated bot. Have feedback? Just send me a message or reply to this comment!* Here is my [source code](" + source_code_url + ").")
                                 
