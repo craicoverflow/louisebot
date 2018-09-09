@@ -13,9 +13,10 @@ from io import StringIO
 
 def load_config():
     default = defaultdict(str)
-    default["subreddit"] = "louisebot"
-    default["limit"] = "10"
     default["bot"] = "ThatsARepostBot"
+    default["subreddit"] = "thats_a_repost_bot"
+    default["limit"] = "10"
+    default["maxage"] = "7"
 
     config_path = os.path.expanduser("./config/check_for_repost.rc")
     section_name = "root"
@@ -41,9 +42,10 @@ def load_config():
                     # print sys.stderr >> err.str_format(name, str(e), default[name])
                     ret[name] = default[name]
 
+            add_to_ret(config.get, "bot")
             add_to_ret(config.get, "subreddit")
             add_to_ret(config.getint, "limit")
-            add_to_ret(config.get, "bot")
+            add_to_ret(config.getint, "maxage")
 
             return ret
         
@@ -53,21 +55,22 @@ def load_config():
 config = load_config()
 
 def parse_args():
-    parser = argparse.ArgumentParser(description = "Your friendly neighbourhood repost checker bot!")
+    parser = argparse.ArgumentParser(description = "Your friendly neighbourhood repost checking robot!")
+    parser.add_argument("-b", "--bot", type=str, default=config["bot"])
     parser.add_argument("-s", "--subreddit", type=str, default=config["subreddit"])
     parser.add_argument("-l", "--limit", type=int, default=config["limit"])
-    parser.add_argument("-b", "--bot", type=str, default=config["bot"])
+    parser.add_argument("-m", "--maxage", type=int, default=config["maxage"])
 
     args = parser.parse_args()
     return args
 
-def filter_duplicates(duplicate_list, submission_created_utc, subreddit_name):
+def filter_duplicates(duplicate_list, submission_created_utc, subreddit_name, max_age):
     for el in duplicate_list:
         if el.subreddit == subreddit_name and submission_created_utc > el.created_utc: yield el
 
-def get_last_duplicate(submission, subreddit_name):
-
-    duplicate_list = list(filter_duplicates(submission.duplicates(), submission.created_utc, subreddit_name))
+def get_last_duplicate(submission, subreddit_name, max_age):
+    
+    duplicate_list = list(filter_duplicates(submission.duplicates(), submission.created_utc, subreddit_name, max_age))
 
     last_duplicate = None
 
@@ -90,6 +93,7 @@ if __name__ == '__main__':
     subreddit_name = args.subreddit
     limit = args.limit
     bot_name = args.bot
+    max_age = args.maxage
 
     reddit = praw.Reddit(bot_name)
     subreddit = reddit.subreddit(subreddit_name)
@@ -108,7 +112,7 @@ if __name__ == '__main__':
 
                 if submission.id not in posts_replied_to and submission.is_self is False:
 
-                    latest_duplicate = get_last_duplicate(submission, subreddit_name)
+                    latest_duplicate = get_last_duplicate(submission, subreddit_name, max_age)
 
                     if latest_duplicate:
                         print("I found a repost: {}".format(submission.permalink.encode('utf-8')))
