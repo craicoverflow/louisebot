@@ -15,10 +15,11 @@ def load_config():
     default = defaultdict(str)
     default["bot"] = "ThatsARepostBot"
     default["subreddit"] = "thats_a_repost_bot"
-    default["limit"] = "10"
+    default["limit"] = "25"
     default["maxage"] = "7"
+    default["logsdir"] = "logs"
 
-    config_path = os.path.expanduser("./config/check_for_repost.rc")
+    config_path = os.path.expanduser("./config/default.rc")
     section_name = "root"
     try:
         config = ConfigParser(default)
@@ -98,7 +99,7 @@ if __name__ == '__main__':
     reddit = praw.Reddit(bot_name)
     subreddit = reddit.subreddit(subreddit_name)
 
-    with open('logs/daily.log', 'a+') as log:
+    with open("logs/daily.log", "a+") as log:
         log.write("Checking /r/{} at {}\n".format(subreddit_name, datetime.utcnow()))
     
     if not os.path.isfile("logs/posts_replied_to.txt"):
@@ -131,4 +132,3 @@ if __name__ == '__main__':
 with open("logs/posts_replied_to.txt", "w") as f:
     for post_id in posts_replied_to:
         f.write(post_id + "\n")
-
