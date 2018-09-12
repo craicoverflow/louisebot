@@ -47,6 +47,7 @@ def load_config():
             add_to_ret(config.get, "subreddit")
             add_to_ret(config.getint, "limit")
             add_to_ret(config.getint, "maxage")
+            add_to_ret(config.get, "logsdir")
 
             return ret
         
@@ -61,6 +62,7 @@ def parse_args():
     parser.add_argument("-s", "--subreddit", type=str, default=config["subreddit"])
     parser.add_argument("-l", "--limit", type=int, default=config["limit"])
     parser.add_argument("-m", "--maxage", type=int, default=config["maxage"])
+    parser.add_argument("-d", "--logsdir", type=str, default=config["logsdir"])
 
     args = parser.parse_args()
     return args
@@ -95,17 +97,18 @@ if __name__ == '__main__':
     limit = args.limit
     bot_name = args.bot
     max_age = args.maxage
+    logs_dir = args.logsdir
 
     reddit = praw.Reddit(bot_name)
     subreddit = reddit.subreddit(subreddit_name)
 
-    with open("logs/daily.log", "a+") as log:
-        log.write("Checking /r/{} at {}\n".format(subreddit_name, datetime.utcnow()))
+    with open("{}/daily.log".format(logs_dir), "w+") as log:
+        log.write("Subreddit: {} [{}]\n".format(subreddit_name, datetime.utcnow()))
     
-    if not os.path.isfile("logs/posts_replied_to.txt"):
+    if not os.path.isfile("{}/posts_replied_to.txt".format(logs_dir)):
         posts_replied_to = [] # Create an empty list to store the IDs of posts that have been replied to
     else:
-        with open("logs/posts_replied_to.txt", "r") as f:
+        with open("{}/posts_replied_to.txt".format(logs_dir), "r") as f:
 
             posts_replied_to = get_posts_replied_to(f)
 
@@ -116,7 +119,6 @@ if __name__ == '__main__':
                     latest_duplicate = get_last_duplicate(submission, subreddit_name, max_age)
 
                     if latest_duplicate:
-                        print("I found a repost: {}".format(submission.permalink.encode('utf-8')))
 
                         # form the full URL of the duplicate so we can let the poster know
                         post_url = 'https://reddit.com' + latest_duplicate.permalink
@@ -128,7 +130,7 @@ if __name__ == '__main__':
                         # Add the submission ID to the list of IDs
                         posts_replied_to.append(submission.id)
 
-# Update the text file with the new IDs of what has been replied to
-with open("logs/posts_replied_to.txt", "w") as f:
-    for post_id in posts_replied_to:
-        f.write(post_id + "\n")
+    # Update the text file with the new IDs of what has been replied to
+    with open("{}/posts_replied_to.txt".format(logs_dir), "w") as f:
+        for post_id in posts_replied_to:
+            f.write(post_id + "\n")
