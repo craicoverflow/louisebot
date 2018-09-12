@@ -1,4 +1,4 @@
 praw.ini
-logs/*
+./logs/*
 .vscode
-config/*
+./config/*
