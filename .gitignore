@@ -1,5 +1,5 @@
 praw.ini
-./logs
-./vscode
-./config/default.rc
-./src/__pycache__
+logs
+.vscode
+config/default.rc
+src/__pycache__
