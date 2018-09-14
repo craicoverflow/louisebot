@@ -6,6 +6,7 @@ import re
 import sys
 import pdb
 import argparse
+import duplicates
 from datetime import datetime
 from configparser import ConfigParser
 from collections import defaultdict
@@ -16,7 +17,7 @@ def load_config():
     default["bot"] = "ThatsARepostBot"
     default["subreddit"] = "thats_a_repost_bot"
     default["limit"] = "25"
-    default["maxage"] = "7"
+    default["maxage"] = "100"
     default["logsdir"] = "logs"
 
     config_path = os.path.expanduser("./config/default.rc")
@@ -67,21 +68,6 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def filter_duplicates(duplicate_list, submission_created_utc, subreddit_name, max_age):
-    for el in duplicate_list:
-        if el.subreddit == subreddit_name and submission_created_utc > el.created_utc: yield el
-
-def get_last_duplicate(submission, subreddit_name, max_age):
-    
-    duplicate_list = list(filter_duplicates(submission.duplicates(), submission.created_utc, subreddit_name, max_age))
-
-    last_duplicate = None
-
-    if len(duplicate_list):
-        last_duplicate = duplicate_list[0]
-
-    return last_duplicate
-
 def get_posts_replied_to(f):
     posts_replied_to = f.read()
     posts_replied_to = posts_replied_to.split("\n")
@@ -116,7 +102,7 @@ if __name__ == '__main__':
 
                 if submission.id not in posts_replied_to and submission.is_self is False:
 
-                    latest_duplicate = get_last_duplicate(submission, subreddit_name, max_age)
+                    latest_duplicate = duplicates.last(submission, subreddit_name, max_age)
 
                     if latest_duplicate:
 
