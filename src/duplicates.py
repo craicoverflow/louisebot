@@ -10,7 +10,7 @@ def filter(duplicate_list, submission_created_utc, subreddit_name, max_age):
         
         days_difference = (created_at - duplicate_created_at).days
 
-        if (duplicate.subreddit == subreddit_name and max_age <= days_difference and 
+        if (duplicate.subreddit == subreddit_name and days_difference <= max_age and 
             submission_created_utc > duplicate.created_utc): 
             yield duplicate
 
