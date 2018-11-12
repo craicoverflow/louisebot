@@ -7,3 +7,7 @@ This bot was made with [Python](https://www.python.org) and [PRAW: The Python Re
 ## Contact me
 
 Have a question about _ThatsARepostBot_? Email at me at hello@endaphelan.me
+
+## To do's
+
+- Expand on documentation to make it easier for other people to clone and use in their own instalation.
